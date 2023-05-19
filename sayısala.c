@@ -13,6 +13,7 @@ void inversematrix();
 void gausskatsayial(double matris[n][n],int denklem,int bilinmeyen);
 void gausselemination();
 void trapez();
+void simpson();
 int main(){
 	int choice;
 	
@@ -34,7 +35,13 @@ int main(){
 		else if(choice==5){
 			gausselemination();
 		}
-		trapez();
+		else if(choice==8){
+			simpson();
+		}
+		else if(choice==9){
+			trapez();
+		}
+		
 		
 		
 		
@@ -382,7 +389,57 @@ void trapez(){
 	S*=h;
 	printf("\nSonuc: %lf\n",S);
 }
+void simpson(){
+	int simp,derece,a,i;
+	double katsayi[n],kucuk,buyuk,S=0.0,h,kucukholder,buyukholder,x1,x2;
+	printf("\n1/3 icin 1'e , 3/8 icin 2'ye basiniz.");
+	scanf("%d",&simp);
+	if(simp==1){
+		derece=fonksiyonderece();
+		fonkkatsayi(katsayi,derece);
+		do{
+			printf("\nN kac? ");
+			scanf("%d",&a);
+		}while(a%2!=0);
+		printf("\nAraligi once kucuk sonra buyuk olmak uzere giriniz.");
+		scanf("%lf %lf",&kucuk,&buyuk);
+		h=(buyuk-kucuk)/a;
+		S= fonksonuc(kucuk,derece,katsayi)+fonksonuc(buyuk,derece,katsayi);
+		for(i=1;i<a;i++){
+			if(i%2==0){
+				S+= 2*fonksonuc(kucuk+(i)*h,derece,katsayi);
+			}
+			else{
+				
+				S+= 4*fonksonuc(kucuk+(i)*h,derece,katsayi);
+			}
+		}
+		S*=h/3;
+		printf("\nSonuc: %lf\n",S);
 
+	}
+	else if(simp==2){
+		derece=fonksiyonderece();
+		fonkkatsayi(katsayi,derece);
+		printf("\nN kac? ");
+		scanf("%d",&a);
+		printf("\nAraligi once kucuk sonra buyuk olmak uzere giriniz.");
+		scanf("%lf %lf",&kucuk,&buyuk);
+		h=(buyuk-kucuk)/a;
+		S=0;
+		buyukholder=buyuk;
+		kucukholder=kucuk;
+		for(i=0;i<a;i++){
+			kucuk = kucukholder +i*h;
+			buyuk = buyukholder - ((a-i-1)*h);
+			x1= fonksonuc(kucuk+(buyuk-kucuk)/3,derece,katsayi);
+			x2= fonksonuc(kucuk+(2*(buyuk-kucuk)/3),derece,katsayi);
+			S+= ((buyuk-kucuk)/8)*(fonksonuc(kucuk,derece,katsayi)+ fonksonuc(buyuk,derece,katsayi)+3*x1+3*x2);
+		}
+		printf("\nSonuc: %lf\n",S);
+		
+	}
+}
 
 
 
