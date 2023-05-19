@@ -15,6 +15,7 @@ void gausselemination();
 void trapez();
 void simpson();
 void gaussSeidel();
+void numdif();
 int main(){
 	int choice;
 	
@@ -36,13 +37,19 @@ int main(){
 		else if(choice==5){
 			gausselemination();
 		}
+		else if(choice==6){
+			gaussSeidel();
+		}
+		else if(choice==7){
+			numdif();
+		}
 		else if(choice==8){
 			simpson();
 		}
 		else if(choice==9){
 			trapez();
 		}
-		gaussSeidel();
+		
 		
 		
 		
@@ -505,6 +512,21 @@ void gaussSeidel(){
 		printf("\n%d. degisken = %lf",i+1,bas[i]);
 	}
 	
+	
+}
+void numdif(){
+	int derece;
+	double katsayi[n],x,h,ileri,geri,merkez;
+	derece=fonksiyonderece();
+	fonkkatsayi(katsayi,derece);
+	printf("\nTurevini bulmak istediginiz sayiyi giriniz ");
+	scanf("%lf",&x);
+	printf("\nh degerini giriniz ");
+	scanf("%lf",&h);
+	ileri = (fonksonuc(x+h,derece,katsayi)-fonksonuc(x,derece,katsayi))/h;
+	geri = (fonksonuc(x,derece,katsayi)- fonksonuc(x-h,derece,katsayi))/h;
+	merkez= (fonksonuc(x+h,derece,katsayi)-fonksonuc(x-h,derece,katsayi))/2*h;
+	printf("\nIleri fark ile : %lf\nGeri fark ile : %lf\nMerkezi fark ile : %lf",ileri,geri,merkez);
 	
 }
 
