@@ -14,6 +14,7 @@ void gausskatsayial(double matris[n][n],int denklem,int bilinmeyen);
 void gausselemination();
 void trapez();
 void simpson();
+void gaussSeidel();
 int main(){
 	int choice;
 	
@@ -41,7 +42,7 @@ int main(){
 		else if(choice==9){
 			trapez();
 		}
-		
+		gaussSeidel();
 		
 		
 		
@@ -439,6 +440,72 @@ void simpson(){
 		printf("\nSonuc: %lf\n",S);
 		
 	}
+}
+void gaussSeidel(){
+	int denklem,i,j,maxIndex,p;
+	double katsayimatris[n][n],sonuc[n],bas[n],hata,farklar[n],maxfark=100,maxVal,tmp,temp,prev;
+	printf("\nKac tane denklem gireceksiniz? (Bilinmeyen sayisiyla esit olmali) ");
+	scanf("%d",&denklem);
+	printf("\nDenklemlerin katsayilar matrisini giriniz. ");
+	gausskatsayial(katsayimatris,denklem,denklem);
+	printf("\nDenklemlerin sonuclarini giriniz: ");
+	for(i=0;i<denklem;i++){
+		printf("\n%d. denklemin sonucu: ",i+1);
+		scanf("%lf",&sonuc[i]);
+	}
+	printf("\nIstenilen min hatayi giriniz ");
+	scanf("%lf",&hata);
+	for(i=0;i<denklem;i++){
+		printf("\n%d. bilinmeyenin baslangic degeri: ",i+1);
+		scanf("%lf",&bas[i]);
+	}
+	for(i=0;i<denklem-1;i++){
+		maxIndex = i;
+    	maxVal = katsayimatris[i][i];
+   		for (p = i + 1; p < denklem; p++) {  // max elemanı bulma 
+        	if (fabs(katsayimatris[p][i]) > fabs(maxVal)) {
+            	maxVal = katsayimatris[p][i];
+           		maxIndex = p;
+       		}
+   		}
+    	if (maxIndex != i) {
+    		tmp=sonuc[i];
+    		sonuc[i]=sonuc[maxIndex];
+    		sonuc[maxIndex]=tmp;
+       		// matris satırlarını değiştirme
+       		for (p = 0; p < denklem; p++) {
+            	temp = katsayimatris[i][p];
+            	katsayimatris[i][p] = katsayimatris[maxIndex][p];
+           		katsayimatris[maxIndex][p] = temp;
+       		}
+    	}
+	}
+	while(maxfark>hata){
+		for(i=0;i<denklem;i++){//her satırdaki kösegen elemanının değeri bulunuyor
+			prev=bas[i];
+			tmp=sonuc[i];
+			for(j=0;j<denklem;j++){
+				if(i!=j){
+					tmp-=katsayimatris[i][j]*bas[j];
+				}
+			}
+			bas[i]=tmp/katsayimatris[i][i];
+			farklar[i]=fabs(bas[i]-prev); //önceki değerleriyle farklarını kaydet
+			
+		}
+		maxfark = farklar[0];
+		for(i=1;i<denklem;i++){//en büyük farkı bul
+			if(farklar[i]>maxfark){
+				maxfark= farklar[i];
+			}
+		}
+		
+	}
+	for(i=0;i<denklem;i++){
+		printf("\n%d. degisken = %lf",i+1,bas[i]);
+	}
+	
+	
 }
 
 
