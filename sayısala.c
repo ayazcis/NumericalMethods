@@ -30,7 +30,9 @@ int main(){
 		else if(choice==4){
 			inversematrix();
 		}
-		gausselemination();
+		else if(choice==5){
+			gausselemination();
+		}
 
 		
 		
@@ -211,31 +213,16 @@ void matrisal(double matris[n][n],int derece){
 	}
 }
 void inversematrix(){
-	double matris[n][n],det=0.0,birim[n][n],katsayi;
-	int boyut,i=0,j,k,sifir,detsifir=0;
+	double matris[n][n],det=0.0,birim[n][n],katsayi,temp,maxVal;
+	int boyut,i=0,j,k,p,maxIndex;
 	printf("\nMatrisin boyutunu giriniz");
 	scanf("%d",&boyut);
 	matrisal(matris,boyut);
-	while(detsifir==0 && i<boyut){
-		sifir=0;
-		for(j=0;j<boyut;j++){
-			if(matris[j][i]==0){
-				sifir++;
-			}
-		}
-		if(sifir==boyut){
-			detsifir=1;
-		}
-		i++;
-	}
 	if(boyut==1){
 		printf("\nMatrisin tersi: %lf",1/matris[0][0]);
 	}
-	else if(detsifir==1){
-		printf("determinant = 0, matrisin tersi yok.");
-	}
 	else{
-		for(i=0;i<boyut;i++){
+		for(i=0;i<boyut;i++){// birim matris olusturma
 			for(j=0;j<boyut;j++){
 				if(i==j){
 					birim[i][j]=1;
@@ -247,9 +234,9 @@ void inversematrix(){
 		}
 		for(i=0;i<boyut-1;i++){
 			//matrisin köşegenleri 0 olmamasını sağlamak
-    		int maxIndex = i;
-    		double maxVal = matris[i][i];
-   			for (int p = i + 1; p < boyut; p++) {
+    		maxIndex = i;
+    		maxVal = matris[i][i];
+   			for (p = i + 1; p < boyut; p++) { // max elemanı bulma
         		if (fabs(matris[p][i]) > fabs(maxVal)) {
             		maxVal = matris[p][i];
             		maxIndex = p;
@@ -257,16 +244,16 @@ void inversematrix(){
     		}
     		if (maxIndex != i) {
         		// matris satırlarını değiştirme
-        		for (int p = 0; p < boyut; p++) {
-            		double temp = matris[i][p];
+        		for (p = 0; p < boyut; p++) {
+            		temp = matris[i][p];
             		matris[i][p] = matris[maxIndex][p];
             		matris[maxIndex][p] = temp;
-            		temp = birim[i][p];
+            		temp = birim[i][p]; //birim matris için de aynısını yapma
             		birim[i][p] = birim[maxIndex][p];
             		birim[maxIndex][p] = temp;
         		}
     		}
-			for(j=i+1;j<boyut;j++){
+			for(j=i+1;j<boyut;j++){ //üst üçgen yapma
 				katsayi = -matris[j][i]/matris[i][i];
 				for(k=0;k<boyut;k++){
 					matris[j][k] += matris[i][k]*katsayi;
@@ -276,11 +263,21 @@ void inversematrix(){
 		
 		}
 		det = matris[boyut-1][boyut-1]*matris[boyut-2][boyut-2];
-		for(i=boyut-3;i>-1;i--){
+		for(i=boyut-3;i>-1;i--){                                       //det bulma
 			det = matris[i][i]*pow(-1,(i+i))*det;
 		}
+		for(i=boyut-1;i>0;i--){
+			for(j=i-1;j>-1;j--){ //alt üçgen yapma
+				katsayi = -matris[j][i]/matris[i][i];
+				for(k=0;k<boyut;k++){
+					matris[j][k] += matris[i][k]*katsayi;
+					birim[j][k] +=birim[i][k]*katsayi;
+				}
+			}
+		}
+		
 		for(i=0;i<boyut;i++){
-			for (k = 0; k < boyut; k++) {
+			for (k = 0; k < boyut; k++) { 
   		  		birim[i][k] /= matris[i][i];
   			}
 		}
@@ -296,6 +293,7 @@ void inversematrix(){
 				printf("\n");
 			}
 		}
+		
 	}
 	
 	
@@ -324,9 +322,9 @@ void gausselemination(){
 	}
 	for(i=0;i<denklem-1;i++){
 			//matrisin köşegenleri 0 olmamasını sağlamak
-    		int maxIndex = i;
-    		double maxVal = katsayimatris[i][i];
-   			for (int p = i + 1; p < denklem; p++) {
+    		maxIndex = i;
+    		maxVal = katsayimatris[i][i];
+   			for (p = i + 1; p < denklem; p++) {  // max elemanı bulma 
         		if (fabs(katsayimatris[p][i]) > fabs(maxVal)) {
             		maxVal = katsayimatris[p][i];
             		maxIndex = p;
@@ -337,13 +335,13 @@ void gausselemination(){
     			sonuc[i]=sonuc[maxIndex];
     			sonuc[maxIndex]=tmp;
         		// matris satırlarını değiştirme
-        		for (int p = 0; p < denklem; p++) {
-            		double temp = katsayimatris[i][p];
+        		for (p = 0; p < denklem; p++) {
+            		temp = katsayimatris[i][p];
             		katsayimatris[i][p] = katsayimatris[maxIndex][p];
             		katsayimatris[maxIndex][p] = temp;
         		}
     		}
-			for(j=i+1;j<denklem;j++){
+			for(j=i+1;j<denklem;j++){ //üst üçgen yapma
 				katsayi = -katsayimatris[j][i]/katsayimatris[i][i];
 				sonuc[j] += sonuc[i]*katsayi;
 				for(k=0;k<denklem;k++){
@@ -352,7 +350,7 @@ void gausselemination(){
 			}
 		
 	}
-	for(i=denklem-1;i>-1;i--){
+	for(i=denklem-1;i>-1;i--){//üst üçgen matristen değerleri bulma
 		tmp=0;
 		if(i==denklem-1){
 			deger[i]=sonuc[i]/katsayimatris[i][i];
@@ -364,7 +362,7 @@ void gausselemination(){
 			deger[i]= (sonuc[i]-tmp)/katsayimatris[i][i];
 		}
 	}
-	for(i=0;i<denklem;i++){
+	for(i=0;i<denklem;i++){ //yazdırma
 		printf("\n%d. degisken = %lf",i+1,deger[i]);
 	}
 	
