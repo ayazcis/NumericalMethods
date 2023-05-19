@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #define n 100
-int fonksiyonal();
+int fonksiyonderece();
 void bisection();
 double fonksonuc(double x,int derece,double dizi[100]);
 void regulafalsi();
@@ -12,6 +12,7 @@ void matrisal(double matris[n][n],int derece);
 void inversematrix();
 void gausskatsayial(double matris[n][n],int denklem,int bilinmeyen);
 void gausselemination();
+void trapez();
 int main(){
 	int choice;
 	
@@ -33,7 +34,7 @@ int main(){
 		else if(choice==5){
 			gausselemination();
 		}
-
+		trapez();
 		
 		
 		
@@ -295,9 +296,6 @@ void inversematrix(){
 		}
 		
 	}
-	
-	
-	
 }
 void gausskatsayial(double matris[n][n],int denklem,int bilinmeyen){
 	int i,j;
@@ -366,6 +364,23 @@ void gausselemination(){
 		printf("\n%d. degisken = %lf",i+1,deger[i]);
 	}
 	
+}
+void trapez(){
+	int derece,a;
+	double katsayi[n],kucuk,buyuk,h,S,i;
+	derece=fonksiyonderece();
+	fonkkatsayi(katsayi,derece);
+	printf("\nN kac? ");
+	scanf("%d",&a);
+	printf("\nAraligi once kucuk sonra buyuk olmak uzere giriniz.");
+	scanf("%lf %lf",&kucuk,&buyuk);
+	h=(buyuk-kucuk)/a;
+	S = (fonksonuc(kucuk,derece,katsayi)+fonksonuc(buyuk,derece,katsayi))/2;
+	for(i=kucuk+h;i<buyuk;i+=h){
+		S += fonksonuc(i,derece,katsayi);
+	}
+	S*=h;
+	printf("\nSonuc: %lf\n",S);
 }
 
 
