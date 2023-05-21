@@ -335,7 +335,7 @@ void gausskatsayial(double matris[n][n],int denklem,int bilinmeyen){
 }
 void gausselemination(){
 	int denklem,p,k,maxIndex,i,j;
-	double katsayimatris[n][n],katsayi,sonuc[n],deger[n],tmp=0,maxVal,temp;
+	double katsayimatris[n][n],katsayi,deger[n],tmp=0,maxVal,temp;
 	printf("\nKac tane denklem gireceksiniz? (Bilinmeyen sayisiyla esit olmali) ");
 	scanf("%d",&denklem);
 	printf("\nDenklemlerin katsayilar matrisini giriniz. ");
@@ -343,22 +343,17 @@ void gausselemination(){
 	printf("\nDenklemlerin sonuclarini giriniz: ");
 	for(i=0;i<denklem;i++){
 		printf("\n%d. denklemin sonucu: ",i+1);
-		scanf("%lf",&sonuc[i]);
-	}
-	for(j=0;j<denklem;j++){
-		katsayimatris[j][denklem]=sonuc[j]; // matrisin son sutununa sonucları ekleme
+		scanf("%lf",&katsayimatris[i][denklem]);
 	}
 	
 	maxkosegen(katsayimatris,denklem); 
 	
-	for(j=0;j<denklem;j++){
-		sonuc[j]=katsayimatris[j][denklem]; // sonuclari tekrar düzenleme
-	}
+
 
 	for(i=0;i<denklem-1;i++){
 		for(j=i+1;j<denklem;j++){ //üst üçgen yapma
 				katsayi = -katsayimatris[j][i]/katsayimatris[i][i];
-				sonuc[j] += sonuc[i]*katsayi;
+				katsayimatris[j][denklem] += katsayimatris[i][denklem]*katsayi;
 				for(k=0;k<denklem;k++){
 					katsayimatris[j][k] += katsayimatris[i][k]*katsayi;
 				}
@@ -367,13 +362,13 @@ void gausselemination(){
 	for(i=denklem-1;i>-1;i--){//üst üçgen matristen değerleri bulma
 		tmp=0;
 		if(i==denklem-1){
-			deger[i]=sonuc[i]/katsayimatris[i][i];
+			deger[i]=katsayimatris[i][denklem]/katsayimatris[i][i];
 		}
 		else{
 			for(k=denklem-1;k>i;k--){
 				tmp+= deger[k]*katsayimatris[i][k];
 			}
-			deger[i]= (sonuc[i]-tmp)/katsayimatris[i][i];
+			deger[i]= (katsayimatris[i][denklem]-tmp)/katsayimatris[i][i];
 		}
 	}
 	for(i=0;i<denklem;i++){ //yazdırma
@@ -453,7 +448,7 @@ void simpson(){
 void gaussSeidel(){
 	
 	int denklem,i,j,maxIndex,p;
-	double katsayimatris[n][n],sonuc[n],bas[n],hata,farklar[n],maxfark=100,maxVal,tmp,temp,prev;
+	double katsayimatris[n][n],bas[n],hata,farklar[n],maxfark=100,maxVal,tmp,temp,prev;
 	printf("\nKac tane denklem gireceksiniz? (Bilinmeyen sayisiyla esit olmali) ");
 	scanf("%d",&denklem);
 	printf("\nDenklemlerin katsayilar matrisini giriniz. ");
@@ -461,7 +456,7 @@ void gaussSeidel(){
 	printf("\nDenklemlerin sonuclarini giriniz: ");
 	for(i=0;i<denklem;i++){
 		printf("\n%d. denklemin sonucu: ",i+1);
-		scanf("%lf",&sonuc[i]);
+		scanf("%lf",&katsayimatris[i][denklem]);
 	}
 	printf("\nIstenilen min hatayi giriniz ");
 	scanf("%lf",&hata);
@@ -469,20 +464,14 @@ void gaussSeidel(){
 		printf("\n%d. bilinmeyenin baslangic degeri: ",i+1);
 		scanf("%lf",&bas[i]);
 	}
-	for(j=0;j<denklem;j++){
-		katsayimatris[j][denklem]=sonuc[j]; // matrisin son sutununa sonucları ekleme
-	}
 
 	maxkosegen(katsayimatris,denklem); // kosegeni max yapma
 	
-	for(j=0;j<denklem;j++){
-		sonuc[j]=katsayimatris[j][denklem]; // sonuclari tekrar düzenleme
-	}
 
 	while(maxfark>hata){
 		for(i=0;i<denklem;i++){//her satırdaki kösegen elemanının değeri bulunuyor
 			prev=bas[i];
-			tmp=sonuc[i];
+			tmp=katsayimatris[i][denklem];
 			for(j=0;j<denklem;j++){
 				if(i!=j){
 					tmp-=katsayimatris[i][j]*bas[j];
