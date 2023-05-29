@@ -14,6 +14,11 @@ void gausskatsayial(double matris[n][n],int denklem,int bilinmeyen);
 void gausselemination();
 void trapez();
 void simpson();
+void gaussSeidel();
+void numdif();
+void gregory();
+int factorial(int x);
+void maxkosegen(double matris[n][n],int derece);
 int main(){
 	int choice;
 	
@@ -35,12 +40,23 @@ int main(){
 		else if(choice==5){
 			gausselemination();
 		}
+		else if(choice==6){
+			gaussSeidel();
+		}
+		else if(choice==7){
+			numdif();
+		}
 		else if(choice==8){
 			simpson();
 		}
 		else if(choice==9){
 			trapez();
 		}
+		else if(choice==10){
+			gregory();
+		}
+		
+		
 		
 		
 		
@@ -142,11 +158,15 @@ void regulafalsi(){
 		scanf("%lf",&hata);
 		tmp = ((buyuk*fonksonuc(kucuk,derece,dizi))-(kucuk*fonksonuc(buyuk,derece,dizi)))/(fonksonuc(kucuk,derece,dizi)-fonksonuc(buyuk,derece,dizi));
 		if(fonksonuc(kucuk,derece,dizi)!=0 || fonksonuc(buyuk,derece,dizi)!=0){
+			
 			while(fabs(fonksonuc(tmp,derece,dizi))>hata){
+				
 				tmp = ((buyuk*fonksonuc(kucuk,derece,dizi))-(kucuk*fonksonuc(buyuk,derece,dizi)))/(fonksonuc(kucuk,derece,dizi)-fonksonuc(buyuk,derece,dizi));
+				
 				if(fonksonuc(tmp,derece,dizi)*fonksonuc(kucuk,derece,dizi)<=0){
 					buyuk=tmp;
 				}
+				
 				if(fonksonuc(tmp,derece,dizi)*fonksonuc(buyuk,derece,dizi)<=0){
 					kucuk=tmp;
 				}
@@ -315,7 +335,7 @@ void gausskatsayial(double matris[n][n],int denklem,int bilinmeyen){
 }
 void gausselemination(){
 	int denklem,p,k,maxIndex,i,j;
-	double katsayimatris[n][n],katsayi,sonuc[n],deger[n],tmp=0,maxVal,temp;
+	double katsayimatris[n][n],katsayi,deger[n],tmp=0,maxVal,temp;
 	printf("\nKac tane denklem gireceksiniz? (Bilinmeyen sayisiyla esit olmali) ");
 	scanf("%d",&denklem);
 	printf("\nDenklemlerin katsayilar matrisini giriniz. ");
@@ -323,48 +343,32 @@ void gausselemination(){
 	printf("\nDenklemlerin sonuclarini giriniz: ");
 	for(i=0;i<denklem;i++){
 		printf("\n%d. denklemin sonucu: ",i+1);
-		scanf("%lf",&sonuc[i]);
+		scanf("%lf",&katsayimatris[i][denklem]);
 	}
+	
+	maxkosegen(katsayimatris,denklem); 
+	
+
+
 	for(i=0;i<denklem-1;i++){
-			//matrisin köşegenleri 0 olmamasını sağlamak
-    		maxIndex = i;
-    		maxVal = katsayimatris[i][i];
-   			for (p = i + 1; p < denklem; p++) {  // max elemanı bulma 
-        		if (fabs(katsayimatris[p][i]) > fabs(maxVal)) {
-            		maxVal = katsayimatris[p][i];
-            		maxIndex = p;
-        		}
-    		}
-    		if (maxIndex != i) {
-    			tmp=sonuc[i];
-    			sonuc[i]=sonuc[maxIndex];
-    			sonuc[maxIndex]=tmp;
-        		// matris satırlarını değiştirme
-        		for (p = 0; p < denklem; p++) {
-            		temp = katsayimatris[i][p];
-            		katsayimatris[i][p] = katsayimatris[maxIndex][p];
-            		katsayimatris[maxIndex][p] = temp;
-        		}
-    		}
-			for(j=i+1;j<denklem;j++){ //üst üçgen yapma
+		for(j=i+1;j<denklem;j++){ //üst üçgen yapma
 				katsayi = -katsayimatris[j][i]/katsayimatris[i][i];
-				sonuc[j] += sonuc[i]*katsayi;
+				katsayimatris[j][denklem] += katsayimatris[i][denklem]*katsayi;
 				for(k=0;k<denklem;k++){
 					katsayimatris[j][k] += katsayimatris[i][k]*katsayi;
 				}
-			}
-		
+		}
 	}
 	for(i=denklem-1;i>-1;i--){//üst üçgen matristen değerleri bulma
 		tmp=0;
 		if(i==denklem-1){
-			deger[i]=sonuc[i]/katsayimatris[i][i];
+			deger[i]=katsayimatris[i][denklem]/katsayimatris[i][i];
 		}
 		else{
 			for(k=denklem-1;k>i;k--){
 				tmp+= deger[k]*katsayimatris[i][k];
 			}
-			deger[i]= (sonuc[i]-tmp)/katsayimatris[i][i];
+			deger[i]= (katsayimatris[i][denklem]-tmp)/katsayimatris[i][i];
 		}
 	}
 	for(i=0;i<denklem;i++){ //yazdırma
@@ -401,6 +405,7 @@ void simpson(){
 			printf("\nN kac? ");
 			scanf("%d",&a);
 		}while(a%2!=0);
+		
 		printf("\nAraligi once kucuk sonra buyuk olmak uzere giriniz.");
 		scanf("%lf %lf",&kucuk,&buyuk);
 		h=(buyuk-kucuk)/a;
@@ -440,6 +445,175 @@ void simpson(){
 		
 	}
 }
+void gaussSeidel(){
+	
+	int denklem,i,j,maxIndex,p;
+	double katsayimatris[n][n],bas[n],hata,farklar[n],maxfark=100,maxVal,tmp,temp,prev;
+	printf("\nKac tane denklem gireceksiniz? (Bilinmeyen sayisiyla esit olmali) ");
+	scanf("%d",&denklem);
+	printf("\nDenklemlerin katsayilar matrisini giriniz. ");
+	gausskatsayial(katsayimatris,denklem,denklem);
+	printf("\nDenklemlerin sonuclarini giriniz: ");
+	for(i=0;i<denklem;i++){
+		printf("\n%d. denklemin sonucu: ",i+1);
+		scanf("%lf",&katsayimatris[i][denklem]);
+	}
+	printf("\nIstenilen min hatayi giriniz ");
+	scanf("%lf",&hata);
+	for(i=0;i<denklem;i++){
+		printf("\n%d. bilinmeyenin baslangic degeri: ",i+1);
+		scanf("%lf",&bas[i]);
+	}
+
+	maxkosegen(katsayimatris,denklem); // kosegeni max yapma
+	
+
+	while(maxfark>hata){
+		for(i=0;i<denklem;i++){//her satırdaki kösegen elemanının değeri bulunuyor
+			prev=bas[i];
+			tmp=katsayimatris[i][denklem];
+			for(j=0;j<denklem;j++){
+				if(i!=j){
+					tmp-=katsayimatris[i][j]*bas[j];
+				}
+			}
+			bas[i]=tmp/katsayimatris[i][i];
+			farklar[i]=fabs(bas[i]-prev); //önceki değerleriyle farklarını kaydet
+			
+		}
+		maxfark = farklar[0];
+		for(i=1;i<denklem;i++){//en büyük farkı bul
+			if(farklar[i]>maxfark){
+				maxfark= farklar[i];
+			}
+		}
+		
+	}
+	for(i=0;i<denklem;i++){
+		printf("\n%d. degisken = %lf",i+1,bas[i]);
+	}
+	
+	
+}
+void numdif(){
+	int derece;
+	double katsayi[n],x,h,ileri,geri,merkez;
+	derece=fonksiyonderece();
+	fonkkatsayi(katsayi,derece);
+	printf("\nTurevini bulmak istediginiz sayiyi giriniz ");
+	scanf("%lf",&x);
+	printf("\nh degerini giriniz ");
+	scanf("%lf",&h);
+	ileri = (fonksonuc(x+h,derece,katsayi)-fonksonuc(x,derece,katsayi))/h;
+	geri = (fonksonuc(x,derece,katsayi)- fonksonuc(x-h,derece,katsayi))/h;
+	merkez= (fonksonuc(x+h,derece,katsayi)-fonksonuc(x-h,derece,katsayi))/(2*h);
+	printf("\nIleri fark ile : %lf\nGeri fark ile : %lf\nMerkezi fark ile : %lf",ileri,geri,merkez);
+	
+}
+int factorial(int x){
+	int i,fac=1;
+	for(i=2;i<x+1;i++){
+		fac*=i;
+	}
+	return fac;
+	
+}
+void gregory(){
+	
+	int xsay,p,j,farksayisi,t=1,i;
+	double h,sonuc[n],xler[n],k,arti,ilerifark[n][n],x,sonc,carpim;
+	printf("\nKac tane x degeri oldugunu giriniz. ");
+	scanf("%d",&xsay);
+	for(i=0;i<xsay;i++){
+		printf("\n %d. x'i giriniz ",i+1);
+		scanf("%lf",&xler[i]);
+		printf("\n Sonucunu giriniz ");
+		scanf("%lf",&sonuc[i]);  //sonuclarını kaydet
+	}
+	h = xler[1]-xler[0];
+	printf("\nSonucunu gormek istediginiz x'i giriniz ");
+	scanf("%lf",&x);
+	for(j=0;j<xsay-1;j++){// ilk ileri farklar
+		ilerifark[j][0]= sonuc[j+1]-sonuc[j];
+	}
+	while(t<xsay+1){ //ileri fark hesabı
+		for(p=0;p<xsay-t;p++){
+			ilerifark[p][t]= ilerifark[p+1][t-1]-ilerifark[p][t-1];
+		}
+		t++;
+	}
+	
+	sonc=sonuc[0];
+	for(p=1;p<xsay;p++){ //formülü uyguluyorum
+			carpim=1;
+			for(j=0;j<p;j++){
+				carpim *= (x- xler[j]);
+			}
+			sonc += (carpim*ilerifark[0][p-1])/(factorial(p)*pow(h,p));
+	}
+	printf("\nSonuc: %lf\n",sonc);
+	
+	
+}
+void maxkosegen(double matris[n][n],int derece){
+	double tmp,maks,tmpmatris[n][n];
+	int kordinat[n],girdi;
+	int i,k,j,p;
+	for(i=0;i<derece;i++){
+		maks=0;
+		for(j=0;j<derece;j++){ //sutundaki maksi bulma
+			if(fabs(matris[j][i])>maks){
+				maks=fabs(matris[j][i]);
+				kordinat[i]= j;
+				
+			}
+		}
+		do{
+			girdi=0;
+			for(p=0;p<i;p++){
+			
+				if(kordinat[p]==kordinat[i]){ //o satırda onceden maks varsa
+				
+					girdi++;
+					if(fabs(matris[kordinat[p]][p])<fabs(matris[kordinat[i]][i])){ //eger su anki maks daha buyuksa
+						maks=0;
+						for(k=0;k<derece;k++){
+							if(fabs(matris[k][p])>maks && k!=kordinat[i]){
+								maks=fabs(matris[k][i]);
+								kordinat[p]= k;
+							}
+						}
+					}
+					else{ //eger diger matris daha buyukse
+						maks=0;
+						for(k=0;k<derece;k++){
+							if(fabs(matris[k][i])>maks && k!=kordinat[p]){
+								maks=fabs(matris[k][i]);
+								kordinat[i]= k;
+							}
+						}
+					
+					}
+					
+				}
+			}
+		}while(girdi!=0); // aynı satırda olmayana kadar
+	}
+	for(i=0;i<derece;i++){// yeni bir matrise dogru halini kaydetme
+		j=kordinat[i];
+		for(p=0;p<=derece;p++){
+			tmpmatris[i][p]=matris[j][p];
+		}
+	}
+	for(i=0;i<derece;i++){ // asıl matrise kopyalama
+		for(p=0;p<=derece;p++){
+			matris[i][p]=tmpmatris[i][p];
+		}
+	}
+
+}
+
+
 
 
 
